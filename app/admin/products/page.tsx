@@ -38,19 +38,20 @@ export default function AdminProductsPage() {
     fetchProducts();
   }, []);
 
-  const handleDelete = async (title: string) => {
-    if (window.confirm(`Are you sure you want to delete ${title}?`)) {
+  const handleDelete = async (index: number) => {
+    const productToDelete = products[index];
+    if (window.confirm(`Are you sure you want to delete ${productToDelete.title}?`)) {
       try {
         const response = await fetch(`/api/products`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ title }),
+          body: JSON.stringify({ index }),
         });
 
         if (response.ok) {
-          setMessage(`Product ${title} deleted successfully!`);
+          setMessage(`Product ${productToDelete.title} deleted successfully!`);
           fetchProducts(); // Refresh the list
         } else {
           const errorData = await response.json();
@@ -107,7 +108,7 @@ export default function AdminProductsPage() {
                     Edit
                   </Link>
                   <button
-                    onClick={() => handleDelete(product.title)}
+                    onClick={() => handleDelete(index)}
                     className="px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors text-sm"
                   >
                     Delete

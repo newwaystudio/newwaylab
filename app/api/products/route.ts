@@ -48,17 +48,16 @@ export async function GET() {
 
 export async function DELETE(request: Request) {
   try {
-    const { title } = await request.json();
+    const { index } = await request.json();
 
     const fileContents = await fs.readFile(productsFilePath, 'utf8');
     let products = JSON.parse(fileContents);
 
-    const initialLength = products.length;
-    products = products.filter((product: any) => product.title !== title);
-
-    if (products.length === initialLength) {
-      return new Response(JSON.stringify({ error: 'Product not found' }), { status: 404 });
+    if (index < 0 || index >= products.length) {
+      return new Response(JSON.stringify({ error: 'Invalid product index' }), { status: 400 });
     }
+
+    products.splice(index, 1); // Remove product at the given index
 
     await fs.writeFile(productsFilePath, JSON.stringify(products, null, 2), 'utf8');
 
